@@ -1,0 +1,54 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        # Scull load and module load faulty driver
+        # $Id: scull_load,v 1.4 2004/11/03 06:19:49 rubini Exp $
+        module="aesdchar"
+        device="aesdchar"
+        mode="664"
+
+        # Group: since distributions do it differently, look for wheel or use staff
+        if grep -q '^staff:' /etc/group; then
+            group="staff"
+        else
+            group="wheel"
+        fi
+
+        # invoke insmod with all arguments we got
+        # and use a pathname, as insmod doesn't look in . by default
+        modprobe $module.ko $* || exit 1
+
+        # retrieve major number
+        major=$(awk "\$2==\"$module\" {print \$1}" /proc/devices)
+        if [ ! -z ${major} ]; then
+            echo "Remove any existing /dev node for /dev/${device}"
+            rm -f /dev/${device}
+            echo "Add a node for our device at /dev/${device} using mknod"
+            mknod /dev/${device} c $major 0
+            echo "Change group owner to ${group}"
+            chgrp $group /dev/${device}
+            echo "Change access mode to ${mode}"
+            chmod $mode  /dev/${device}
+        else
+            echo "No device found in /proc/devices for driver ${module} (this driver may not allocate a device)"
+        fi
+
+        ;;
+    stop)
+        # Module load faulty driver 
+        module="aesdchar"
+        device="aesdchar"
+
+        rmmod $module || exit 1
+
+        # Remove stale nodes
+        rm -f /dev/${device}
+
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+    exit 1
+esac
+
+exit 0

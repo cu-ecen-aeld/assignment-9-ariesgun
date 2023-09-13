@@ -1,0 +1,2 @@
+/root/aesd_load f 755 root root - - - - - 
+/etc/init.d/S98aesdmodule f 755 root root - - - - -

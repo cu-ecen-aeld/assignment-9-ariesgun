@@ -1,0 +1,18 @@
+#!/bin/sh
+
+modprobe aesdchar
+mknod /dev/aesdchar c 248 0
+
+echo "writer1" > /dev/aesdchar
+echo "writer2" > /dev/aesdchar
+echo "writer3" > /dev/aesdchar
+echo "writer4" > /dev/aesdchar
+echo "writer5" > /dev/aesdchar
+echo "writer6" > /dev/aesdchar
+echo "writer7" > /dev/aesdchar
+echo "writer8" > /dev/aesdchar
+echo "writer9" > /dev/aesdchar
+echo "writer10" > /dev/aesdchar
+echo "writer11" > /dev/aesdchar
+
+cat /dev/aesdchar
